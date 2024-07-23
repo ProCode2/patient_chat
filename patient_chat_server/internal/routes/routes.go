@@ -19,6 +19,10 @@ func LoadRoutes() *chi.Mux {
 		r.Use(middlewares.Authenticate)
 
 		r.Delete("/logout", handlers.LogOutHandler)
+		r.Route("/patient", func(r chi.Router) {
+			r.Get("/", handlers.GetPatient)
+			r.Get("/doc", handlers.GetPatientDoc)
+		})
 	})
 	return r
 }

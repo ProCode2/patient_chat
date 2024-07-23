@@ -23,10 +23,10 @@ type Session struct {
 }
 
 type Doctor struct {
-	ID            string `json:"id"`
-	UserID        string `json:"userId"`
-	Qualification string `json:"qualification"`
-	Hospital      string `json:"hospital"`
+	ID            string `json:"id" db:"id"`
+	UserID        string `json:"userId" db:"user_id"`
+	Qualification string `json:"qualification" db:"qualification"`
+	Hospital      string `json:"hospital" db:"hospital"`
 }
 
 type Patient struct {
@@ -39,4 +39,9 @@ type Patient struct {
 type PatientUser struct {
 	User    *User    `json:"user"`
 	Patient *Patient `json:"patient"`
+}
+
+type DoctorUser struct {
+	User   *User   `json:"user"`
+	Doctor *Doctor `json:"doctor"`
 }

@@ -166,3 +166,15 @@ func (d *DbStore) GetPatientByUserID(uid string) (*types.Patient, error) {
 	}
 	return &p, nil
 }
+
+func (d *DbStore) GetDocByUserID(did string) (*types.Doctor, error) {
+	s := `SELECT id, user_id, qualification, hospital FROM doctors WHERE user_id = ?`
+	var dc types.Doctor
+	err := d.db.Get(&dc, s, did)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dc, nil
+}
