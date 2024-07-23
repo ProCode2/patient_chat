@@ -83,8 +83,21 @@ func SignUpPatient(name, did, phone string) (*types.Patient, error) {
 	return p, nil
 }
 
+func LoginPatient(phone string) (*types.User, error) {
+	u, err := db.GetUserByPhone(phone)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("No user with that phone number exists yet")
+		} else {
+			return nil, errors.New("Something went wrong while fetching user data")
+		}
+	}
+	return u, nil
+
+}
+
 func CreateSessionForUser(uid string) (*types.Session, error) {
-	// TODO: delete previous sessions for this user
 	prev, err := db.GetUserSession(uid)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, errors.New("Something went wrong while fetching previous session.")
@@ -104,4 +117,52 @@ func CreateSessionForUser(uid string) (*types.Session, error) {
 	}
 
 	return s, nil
+}
+
+func DeleteSessionForUser(sid string) error {
+	err := db.DeleteUserSession(sid)
+	if err != nil {
+		log.Println("Something went wrong when deleting session: ", err)
+		return errors.New("Something went wrong when deleting session")
+	}
+	return nil
+}
+
+func GetSessionForUser(sid string) (*types.Session, error) {
+	s, err := db.GetUserSession(sid)
+	if err != nil {
+		log.Println("Can not get user session", err)
+		return nil, errors.New("Something went wrong when getting session")
+	}
+
+	return s, nil
+}
+
+func GetSessionBySessionID(sid string) (*types.Session, error) {
+	s, err := db.GetUserSessionBySessionID(sid)
+	if err != nil {
+		log.Println("Can not get user session by ID", err)
+		return nil, errors.New("Something went wrong when getting session")
+	}
+
+	return s, nil
+}
+
+func GetUserFromID(uid string) (*types.User, error) {
+	u, err := db.GetUserByID(uid)
+	if err != nil {
+		log.Println("Can not get user with ID", err)
+		return nil, errors.New("Something went wrong while fetching user with ID")
+	}
+
+	return u, nil
+}
+
+func GetPatientData(uid string) (*types.Patient, error) {
+	p, err := db.GetPatientByUserID(uid)
+	if err != nil {
+		log.Println("Can not get patient with User ID", err)
+		return nil, errors.New("Something went wrong while fetching patient with user ID")
+	}
+	return p, nil
 }

@@ -27,22 +27,46 @@ func NewStore() *DbStore {
 type GetSession struct {
 	Sid    string `db:"session_id"`
 	Uid    string `db:"user_id"`
-	expiry string `db:"expired_at"`
+	Expiry string `db:"expires_at"`
 }
 
 func (d *DbStore) GetUserSession(uid string) (*types.Session, error) {
 	s := `SELECT * FROM sessions WHERE user_id = ?`
 	var ses GetSession
-	res := d.db.QueryRow(s, uid)
-
-	err := res.Scan(&ses)
+	err := d.db.Get(&ses, s, uid)
 
 	if err != nil {
-		log.Println("Can not get sessinos of user")
+		log.Println("Can not get sessions of user", err)
 		return nil, err
 	}
 
-	t, err := time.Parse(time.RFC1123, ses.expiry)
+	t, err := time.Parse(time.RFC3339, ses.Expiry)
+	if err != nil {
+		log.Println("Can not get sessinos of user", err)
+		return nil, err
+	}
+
+	session := &types.Session{
+		UserID:    ses.Uid,
+		SessionID: ses.Sid,
+		ExpiresAt: t,
+	}
+
+	return session, nil
+
+}
+
+func (d *DbStore) GetUserSessionBySessionID(sid string) (*types.Session, error) {
+	s := `SELECT * FROM sessions WHERE session_id = ?`
+	var ses GetSession
+	err := d.db.Get(&ses, s, sid)
+
+	if err != nil {
+		log.Println("Can not get sessinos of user", err)
+		return nil, err
+	}
+
+	t, err := time.Parse(time.RFC3339, ses.Expiry)
 	if err != nil {
 		log.Println("Can not get sessinos of user", err)
 		return nil, err
@@ -60,7 +84,7 @@ func (d *DbStore) GetUserSession(uid string) (*types.Session, error) {
 
 func (d *DbStore) CreateUserSession(uid, sid string, expiry time.Time) error {
 	sSql := `INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)`
-	_, err := d.db.Exec(sSql, sid, sid, expiry)
+	_, err := d.db.Exec(sSql, sid, uid, expiry.Format(time.RFC3339))
 	if err != nil {
 		log.Println("Can not create new session: ", err)
 		return err
@@ -69,7 +93,7 @@ func (d *DbStore) CreateUserSession(uid, sid string, expiry time.Time) error {
 }
 
 func (d *DbStore) DeleteUserSession(sid string) error {
-	sSql := `DELETE FROM sessions WHERE sid = ?`
+	sSql := `DELETE FROM sessions WHERE session_id = ?`
 	_, err := d.db.Exec(sSql, sid)
 	if err != nil {
 		log.Println("Can not delete session: ", err)
@@ -118,4 +142,27 @@ func (d *DbStore) CreateNewDoc(id, uid, q, h string) error {
 		return err
 	}
 	return nil
+}
+
+func (d *DbStore) GetUserByID(uid string) (*types.User, error) {
+	s := `SELECT id, name, phone, role FROM users WHERE id = ?`
+	var u types.User
+	err := d.db.Get(&u, s, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (d *DbStore) GetPatientByUserID(uid string) (*types.Patient, error) {
+	s := `SELECT id, user_id, doc_id FROM patients WHERE user_id = ?`
+	var p types.Patient
+
+	err := d.db.Get(&p, s, uid)
+
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }

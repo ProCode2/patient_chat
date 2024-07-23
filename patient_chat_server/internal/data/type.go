@@ -30,8 +30,13 @@ type Doctor struct {
 }
 
 type Patient struct {
-	ID             string   `json:"id"`
-	UserID         string   `json:"userId"`
-	DocID          string   `json:"docId"`
-	MedicalHistory []string `json:"medicalHistory"`
+	ID             string   `json:"id" db:"id"`
+	UserID         string   `json:"userId" db:"user_id"`
+	DocID          string   `json:"docId" db:"doc_id"`
+	MedicalHistory []string `json:"medicalHistory" db:"medical_history"`
+}
+
+type PatientUser struct {
+	User    *User    `json:"user"`
+	Patient *Patient `json:"patient"`
 }

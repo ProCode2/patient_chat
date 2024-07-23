@@ -2,5 +2,6 @@
 CREATE TABLE sessions (
     user_id TEXT NOT NULL,
     session_id TEXT NOT NULL,
-    expires_at TEXT NOT NULL
+    expires_at TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 )
