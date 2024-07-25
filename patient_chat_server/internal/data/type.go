@@ -45,3 +45,13 @@ type DoctorUser struct {
 	User   *User   `json:"user"`
 	Doctor *Doctor `json:"doctor"`
 }
+
+type Chat struct {
+	ID        string `json:"id" db:"ID"`
+	PatientID string `json:"patientId" db:"patient_id"`
+	DoctorID  string `json:"doctorId" db:"doc_id"`
+	ThreadID  string `json:"threadId" db:"thread_id"`
+	Query     string `json:"query" db:"query"`
+	Response  string `json:"response" db:"response"`
+	Time      string `json:"time" db:"time"`
+}

@@ -22,6 +22,9 @@ func LoadRoutes() *chi.Mux {
 		r.Route("/patient", func(r chi.Router) {
 			r.Get("/", handlers.GetPatient)
 			r.Get("/doc", handlers.GetPatientDoc)
+			r.Get("/chats", handlers.GetChatsHandler)
+			r.Get("/chats/{chatID}", handlers.GetChatsByThreadIDHandler)
+			r.Post("/chats", handlers.AddChatHandler)
 		})
 	})
 	return r

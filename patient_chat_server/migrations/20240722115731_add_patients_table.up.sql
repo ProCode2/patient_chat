@@ -1,6 +1,6 @@
 -- Add up migration script here
 CREATE TABLE IF NOT EXISTS users (
-    id TEXT UNIQUE NOT NULL,
+    id TEXT UNIQUE NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     phone TEXT NOT NULL,
     role TEXT NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS doctors (
-    id TEXT UNIQUE NOT NULL,
+    id TEXT UNIQUE NOT NULL PRIMARY KEY,
     user_id TEXT NOT NULL,
     qualification TEXT,
     hospital TEXT,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS doctors (
 );
 
 CREATE TABLE IF NOT EXISTS patients (
-    id TEXT UNIQUE NOT NULL,
+    id TEXT UNIQUE NOT NULL PRIMARY KEY,
     user_id TEXT NOT NULL,
     doc_id TEXT NOT NULL,
     medical_history TEXT,
