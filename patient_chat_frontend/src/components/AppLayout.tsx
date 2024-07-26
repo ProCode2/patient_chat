@@ -1,8 +1,11 @@
 import { Outlet } from "react-router-dom"
 import { SideBar } from "./Sidebar"
 import { MobileSideBar } from "./MobileSideBar"
+import { Toaster } from "./ui/toaster"
+import { useEffect } from "react"
 
 export const AppLayout = () => {
+  useEffect(() => {}, [])
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <SideBar />
@@ -10,6 +13,7 @@ export const AppLayout = () => {
         <MobileSideBar />
         <Outlet />
       </div>
+      <Toaster key="toaster" />
     </div>
   )
 }

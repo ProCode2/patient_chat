@@ -24,6 +24,19 @@ func NewStore() *DbStore {
 	return &DbStore{db: db}
 }
 
+// get all users who are doctors
+func (d *DbStore) GetAllDoctorUsers() ([]types.User, error) {
+	s := `SELECT id, name FROM users WHERE role = "doctor"`
+
+	var ds []types.User
+	err := d.db.Select(&ds, s)
+	if err != nil {
+		return nil, err
+	}
+
+	return ds, nil
+}
+
 type GetSession struct {
 	Sid    string `db:"session_id"`
 	Uid    string `db:"user_id"`

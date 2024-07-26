@@ -12,8 +12,8 @@ const (
 type User struct {
 	ID    string `json:"id" db:"id"`
 	Name  string `json:"name" db:"name"`
-	Phone string `json:"phone" db:"phone"`
-	Role  Role   `json:"role" db:"role"`
+	Phone string `json:"phone,omitempty" db:"phone"`
+	Role  Role   `json:"role,omitempty" db:"role"`
 }
 
 type Session struct {

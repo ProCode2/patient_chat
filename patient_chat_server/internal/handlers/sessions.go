@@ -9,6 +9,19 @@ import (
 	"github.com/patient_chat/patient_chat_server/internal/models"
 )
 
+func GetDoctorsHandler(w http.ResponseWriter, r *http.Request) {
+	ds, err := models.GetDoctors()
+
+	if err != nil {
+		log.Println("can not get all doctors: ", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	render.Respond(w, r, ds)
+
+}
+
 type SignUpRequestBody struct {
 	PatientName string `json:"patientName"`
 	DoctorID    string `json:"doctorId"`

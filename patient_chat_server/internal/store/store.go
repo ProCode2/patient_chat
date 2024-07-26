@@ -22,6 +22,7 @@ type DbStorer interface {
 	// doc
 	CreateNewDoc(id, uid, q, h string) error
 	GetDocByUserID(uid string) (*types.Doctor, error)
+	GetAllDoctorUsers() ([]types.User, error)
 	// chats
 	GetChats(uid string) ([]types.Chat, error)
 	AddChat(id, pid, did, tid, q, r string) error

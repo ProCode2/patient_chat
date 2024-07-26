@@ -166,3 +166,12 @@ func GetPatientData(uid string) (*types.Patient, error) {
 	}
 	return p, nil
 }
+
+func GetDoctors() ([]types.User, error) {
+	ds, err := db.GetAllDoctorUsers()
+	if err != nil {
+		log.Println("Can not get all doctors", err)
+		return nil, errors.New("Something went wrong while getting all doctors")
+	}
+	return ds, nil
+}

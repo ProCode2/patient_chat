@@ -15,6 +15,7 @@ func LoadRoutes() *chi.Mux {
 	r.Use(middleware.Recoverer)
 	r.Post("/signup", handlers.SignUpHandler)
 	r.Post("/login", handlers.LoginHandler)
+	r.Get("/docs", handlers.GetDoctorsHandler)
 	r.Route("/", func(r chi.Router) {
 		r.Use(middlewares.Authenticate)
 
