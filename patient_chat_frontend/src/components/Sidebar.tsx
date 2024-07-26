@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Hospital, Loader, LogIn, LogInIcon, LogOut, LucideLogIn, MessageCircleHeart, Plus, Settings, Signature } from "lucide-react"
+import { Hospital, Loader, LogIn, LogOut, MessageCircleHeart, Plus, Settings } from "lucide-react"
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "./ui/use-toast";
