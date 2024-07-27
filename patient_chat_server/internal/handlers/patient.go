@@ -37,3 +37,40 @@ func GetPatientDoc(w http.ResponseWriter, r *http.Request) {
 
 	render.Respond(w, r, d)
 }
+
+type UpdatePatientBody struct {
+	DocID          string `json:"docId"`
+	Name           string `json:"name"`
+	MedicalHistory string `json:medicalHistory`
+}
+
+func (u *UpdatePatientBody) Bind(r *http.Request) error {
+	return nil
+}
+
+func UpdatePatientDataHandler(w http.ResponseWriter, r *http.Request) {
+	var u UpdatePatientBody
+
+	err := render.Bind(r, &u)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	p, ok := r.Context().Value("patient").(*types.PatientUser)
+
+	if !ok {
+		http.Error(w, "Patient not found", http.StatusBadRequest)
+		return
+	}
+
+	d, err := models.UpdatePatient(p, u.DocID, u.Name, u.MedicalHistory)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	render.Respond(w, r, d)
+
+}

@@ -23,7 +23,7 @@ func GetChatsForUser(uid string) ([]types.Chat, error) {
 	return cs, nil
 }
 
-func AddUserChat(pid, did, tid, query string) (bool, error) {
+func AddUserChat(pid, did, tid, query string) (string, error) {
 	res := ai.GetResponse(query)
 	if tid == "" {
 		tid = GenID()
@@ -32,9 +32,9 @@ func AddUserChat(pid, did, tid, query string) (bool, error) {
 
 	if err != nil {
 		log.Println("can not add chat: ", err)
-		return false, errors.New("Something went wrong while adding chats")
+		return "", errors.New("Something went wrong while adding chats")
 	}
-	return true, nil
+	return tid, nil
 }
 
 func GetChatsByThreadID(tid string) ([]types.Chat, error) {

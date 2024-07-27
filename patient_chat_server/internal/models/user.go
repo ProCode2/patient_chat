@@ -56,7 +56,7 @@ func NewPatient(uid, did string) *types.Patient {
 		ID:             GenID(),
 		UserID:         uid,
 		DocID:          did,
-		MedicalHistory: []string{},
+		MedicalHistory: "",
 	}
 
 	err := db.CreateNewPatient(p.ID, p.UserID, p.DocID, p.MedicalHistory)

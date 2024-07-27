@@ -61,7 +61,7 @@ func AddChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Respond(w, r, res)
+	render.Respond(w, r, map[string]string{"threadId": res})
 }
 
 func GetChatsByThreadIDHandler(w http.ResponseWriter, r *http.Request) {

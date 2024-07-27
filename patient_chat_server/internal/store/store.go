@@ -17,8 +17,10 @@ type DbStorer interface {
 	GetUserByID(uid string) (*types.User, error)
 	GetUserByPhone(phone string) (*types.User, error)
 	// patient
-	CreateNewPatient(id, uid, did string, mhs []string) error
+	CreateNewPatient(id, uid, did string, mhs string) error
 	GetPatientByUserID(uid string) (*types.Patient, error)
+	UpdatePatientUser(u *types.User) (bool, error)
+	UpdatePatientData(u *types.Patient) (bool, error)
 	// doc
 	CreateNewDoc(id, uid, q, h string) error
 	GetDocByUserID(uid string) (*types.Doctor, error)

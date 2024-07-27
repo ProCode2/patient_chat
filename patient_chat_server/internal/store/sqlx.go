@@ -2,7 +2,6 @@ package store
 
 import (
 	"log"
-	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -137,9 +136,9 @@ func (d *DbStore) GetUserByPhone(phone string) (*types.User, error) {
 	return &u, nil
 }
 
-func (d *DbStore) CreateNewPatient(id, uid, did string, mhs []string) error {
+func (d *DbStore) CreateNewPatient(id, uid, did, mhs string) error {
 	s := `INSERT INTO patients (id, user_id, doc_id, medical_history) VALUES (?, ?, ?, ?)`
-	_, err := d.db.Exec(s, id, uid, did, strings.Join(mhs, ","))
+	_, err := d.db.Exec(s, id, uid, did, mhs)
 	if err != nil {
 		log.Println("Can not cretae patient: ", err)
 		return err
@@ -169,7 +168,7 @@ func (d *DbStore) GetUserByID(uid string) (*types.User, error) {
 }
 
 func (d *DbStore) GetPatientByUserID(uid string) (*types.Patient, error) {
-	s := `SELECT id, user_id, doc_id FROM patients WHERE user_id = ?`
+	s := `SELECT id, user_id, doc_id, medical_history FROM patients WHERE user_id = ?`
 	var p types.Patient
 
 	err := d.db.Get(&p, s, uid)
@@ -190,4 +189,27 @@ func (d *DbStore) GetDocByUserID(did string) (*types.Doctor, error) {
 	}
 
 	return &dc, nil
+}
+
+// update user whos role is patient
+func (d *DbStore) UpdatePatientUser(u *types.User) (bool, error) {
+	s := `UPDATE users SET name = ?, phone = ? WHERE id = ?`
+	_, err := d.db.Exec(s, u.Name, u.Phone, u.ID)
+	if err != nil {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+// update patient data in patient table
+func (d *DbStore) UpdatePatientData(u *types.Patient) (bool, error) {
+	log.Println(u.MedicalHistory)
+	s := `UPDATE patients SET doc_id = ?, medical_history = ? WHERE user_id = ?`
+	_, err := d.db.Exec(s, u.DocID, u.MedicalHistory, u.UserID)
+	if err != nil {
+		return false, nil
+	}
+
+	return true, nil
 }

@@ -22,6 +22,7 @@ func LoadRoutes() *chi.Mux {
 		r.Delete("/logout", handlers.LogOutHandler)
 		r.Route("/patient", func(r chi.Router) {
 			r.Get("/", handlers.GetPatient)
+			r.Put("/", handlers.UpdatePatientDataHandler)
 			r.Get("/doc", handlers.GetPatientDoc)
 			r.Get("/chats", handlers.GetChatsHandler)
 			r.Get("/chats/{chatID}", handlers.GetChatsByThreadIDHandler)
