@@ -18,6 +18,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { ChatBox } from './components/ChatBox';
 
 // Create a client
 const queryClient = new QueryClient()
@@ -34,7 +35,11 @@ const router = createBrowserRouter([
       element: <SettingsPage />
     }, {
       path: "/chat",
-      element: <ChatPage />
+      element: <ChatPage />,
+      children: [{
+        path: "/chat/:threadId",
+        element: <ChatBox />
+      }]
     }, {
       path: "/login",
       element: <LoginPage />
