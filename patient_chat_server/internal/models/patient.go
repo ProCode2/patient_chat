@@ -34,7 +34,7 @@ func UpdatePatient(p *types.PatientUser, did, name, mhs string) (bool, error) {
 
 	p.User.Name = name
 	p.Patient.DocID = did
-	if p.Patient.MedicalHistory != "" {
+	if p.Patient.MedicalHistory != "" && mhs != "" {
 		p.Patient.MedicalHistory += ("," + mhs)
 	}
 	p.Patient.MedicalHistory += mhs

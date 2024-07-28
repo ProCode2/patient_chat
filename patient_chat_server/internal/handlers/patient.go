@@ -41,7 +41,7 @@ func GetPatientDoc(w http.ResponseWriter, r *http.Request) {
 type UpdatePatientBody struct {
 	DocID          string `json:"docId"`
 	Name           string `json:"name"`
-	MedicalHistory string `json:medicalHistory`
+	MedicalHistory string `json:"medicalHistory"`
 }
 
 func (u *UpdatePatientBody) Bind(r *http.Request) error {

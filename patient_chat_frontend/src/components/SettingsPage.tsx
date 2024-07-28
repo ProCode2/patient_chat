@@ -22,6 +22,22 @@ const getPatient = async () => {
   return patient;
 }
 
+const getLinkedDoc = async () => {
+  const res = await fetch("/api/patient/doc", {
+    headers: {
+      "Content-Type": "application/json",
+      "Authentication": window.localStorage.getItem("session") || ""
+    }
+  });
+
+  if (res.status !== 200) {
+    throw Error("Something went wrong while fetching doctor data, Please try again!");
+  }
+
+  const doctor = await res.json()
+  return doctor;
+}
+
 const updatePatient = async (data: IInputState) => {
   const res = await fetch("/api/patient", {
     method: "put",
@@ -36,7 +52,7 @@ const updatePatient = async (data: IInputState) => {
     throw Error("Something went wrong while updatig patient data, Please try again!");
   }
 
-  // window.location.reload()
+  window.location.reload();
 }
 
 interface IUser {
@@ -70,6 +86,18 @@ interface DDoc {
   id: string;
 }
 
+interface IDoc {
+  id: string;
+  name: string;
+  qualification: string;
+  hospital: string;
+}
+
+interface IDocUser {
+  user: IUser;
+  doctor: IDoc;
+}
+
 const getAllDoctors = async () => {
   const res = await fetch("/api/docs");
   const docs = await res.json();
@@ -78,6 +106,7 @@ const getAllDoctors = async () => {
 
 export const SettingsPage = () => {
   const patientQuery = useQuery<IPatientUser>({ queryKey: ["get-patient-user"], queryFn: getPatient })
+  const docQuery = useQuery<IDocUser>({ queryKey: ["get-doc-user"], queryFn: getLinkedDoc })
   const [state, setState] = useState<IInputState>({
     name: patientQuery.data?.user.name || "",
     docId: patientQuery.data?.patient.docId || "",
@@ -86,7 +115,7 @@ export const SettingsPage = () => {
   const getDoc = useQuery<DDoc[]>({
     queryKey: ['allDoctors'], queryFn: getAllDoctors
   });
-  const editPatient = useMutation({mutationFn: updatePatient})
+  const editPatient = useMutation({ mutationFn: updatePatient })
 
   useEffect(() => {
     if (patientQuery.isError) {
@@ -95,13 +124,27 @@ export const SettingsPage = () => {
         description: patientQuery.error.message
       });
     }
+
+    if (getDoc.isError) {
+      toast({
+        title: "Error while getting all doctors data",
+        description: getDoc.error.message
+      });
+    }
+    if (docQuery.isError) {
+      toast({
+        title: "Error while getting all doctors data",
+        description: docQuery.error.message
+      });
+    }
+
     setState({
       name: patientQuery.data?.user.name || "",
       docId: patientQuery.data?.patient.docId || "",
       medicalHistory: "",
     })
     console.log(patientQuery.data);
-  }, [patientQuery.isError, patientQuery.error, patientQuery.data])
+  }, [patientQuery.isError, patientQuery.error, docQuery.isError, docQuery.error, getDoc.isError, getDoc.error, patientQuery.data])
 
   return (
     <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
@@ -164,6 +207,15 @@ export const SettingsPage = () => {
                 }
               </SelectContent>
             </Select>
+            {
+              docQuery.isPending
+                ? <div className="">Fetching doctor data</div>
+                : docQuery.isSuccess ? <div className="mt-3 border rounded-md p-2 flex flex-col justify-center items-started">
+                  <h5 className="font-bold text-xl">{docQuery.data?.user.name}</h5>
+                  <p className="bg-slate-500 p-2 rounded-md shadow max-w-max text-sm text-white mt-3">{docQuery.data?.doctor.qualification}</p>
+                  <p className="mt-2">Hospital: {docQuery.data?.doctor.hospital}</p>
+                </div> : null
+            }
           </CardContent>
         </Card>
       </div>

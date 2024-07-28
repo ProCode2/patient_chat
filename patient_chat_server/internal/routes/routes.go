@@ -2,6 +2,8 @@ package routes
 
 import (
 	"net/http"
+	// "os"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -16,21 +18,42 @@ func LoadRoutes() *chi.Mux {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Post("/signup", handlers.SignUpHandler)
-	r.Post("/login", handlers.LoginHandler)
-	r.Get("/docs", handlers.GetDoctorsHandler)
-	r.Route("/", func(r chi.Router) {
-		r.Use(middlewares.Authenticate)
+	// Create a route along /public that will serve contents from
+	// the ./dist/ folder.
+	// workDir, _ := os.Getwd()
+	// filesDir := http.Dir(filepath.Join(workDir, "dist"))
+	// FileServer(r, "/", filesDir)
+	// Serve static files
+	// fs := http.FileServer(http.Dir("./dist"))
+	// r.Handle("/", fs)
+	// r.Handle("/chat", fs)
+	// r.Handle("/settings", fs)
+	r.Route("/api", func(r chi.Router) {
+		r.Post("/signup", handlers.SignUpHandler)
+		r.Post("/login", handlers.LoginHandler)
+		r.Get("/docs", handlers.GetDoctorsHandler)
+		r.Group(func(auth chi.Router) {
+			auth.Use(middlewares.Authenticate)
 
-		r.Delete("/logout", handlers.LogOutHandler)
-		r.Route("/patient", func(r chi.Router) {
-			r.Get("/", handlers.GetPatient)
-			r.Put("/", handlers.UpdatePatientDataHandler)
-			r.Get("/doc", handlers.GetPatientDoc)
-			r.Get("/chats", handlers.GetChatsHandler)
-			r.Get("/chats/{chatID}", handlers.GetChatsByThreadIDHandler)
-			r.Post("/chats", handlers.AddChatHandler)
+			auth.Delete("/logout", handlers.LogOutHandler)
+			auth.Route("/patient", func(p chi.Router) {
+				p.Get("/", handlers.GetPatient)
+				p.Put("/", handlers.UpdatePatientDataHandler)
+				p.Get("/doc", handlers.GetPatientDoc)
+				p.Get("/chats", handlers.GetChatsHandler)
+				p.Get("/chats/{chatID}", handlers.GetChatsByThreadIDHandler)
+				p.Post("/chats", handlers.AddChatHandler)
+			})
 		})
+	})
+
+	// Serve static files
+	staticHandler := http.FileServer(http.Dir("./dist"))
+	r.Handle("/assets/*", staticHandler)
+
+	// Catch-all route to serve index.html for React Router
+	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join("dist", "index.html"))
 	})
 	return r
 }
